@@ -105,7 +105,7 @@ export const PRODUCTS = [
   { id: 'p11', name: 'Samsung Galaxy A15 128 Go', cat: 'Téléphones & Tablettes', price: 145000, stock: 12, code: 'NGS-6001', image: '/products/samsung-galaxy-a15.jpg',
     blurb: "Smartphone Android polyvalent, écran 6,5\" Super AMOLED, batterie 5000 mAh, idéal pour un usage professionnel comme personnel.",
     specs: [{ k: 'Écran', v: '6,5" Super AMOLED' }, { k: 'Stockage', v: '128 Go' }, { k: 'Mémoire', v: '4 Go RAM' }, { k: 'Batterie', v: '5000 mAh' }] },
-  { id: 'p12', name: 'Tablette Lenovo Tab M10 Plus', cat: 'Téléphones & Tablettes', price: 98000, stock: 8, code: 'NGS-6015', image: '/products/tablette-lenovo-tab-m10-plus.jpg',
+  { id: 'p12', name: 'Tablette Lenovo Tab M10 Plus', cat: 'Téléphones & Tablettes', price: 98000, stock: 8, code: 'NGS-6015', image: '/products/tablette-lenovo-tab-m10-plus.png',
     blurb: "Tablette 10,6 pouces pour la prise de notes, la lecture de documents et les visioconférences en déplacement.",
     specs: [{ k: 'Écran', v: '10,6" Full HD' }, { k: 'Stockage', v: '64 Go' }, { k: 'Connectivité', v: 'Wi-Fi' }] },
   { id: 'p117', name: 'Tecno Spark', cat: 'Téléphones & Tablettes', price: 95000, stock: 12, code: 'NGS-6016', image: '/products/tecno-spark-cameo.jpg',
