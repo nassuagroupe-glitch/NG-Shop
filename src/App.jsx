@@ -4,6 +4,7 @@ import TopBar from './components/TopBar.jsx';
 import Header from './components/Header.jsx';
 import NavBar from './components/NavBar.jsx';
 import TrustStrip from './components/TrustStrip.jsx';
+import WhatsAppButton from './components/WhatsAppButton.jsx';
 import Boutique from './screens/Boutique.jsx';
 import Produit from './screens/Produit.jsx';
 import Panier from './screens/Panier.jsx';
@@ -42,6 +43,7 @@ export default function App() {
         {st.screen === 'compte' && <Compte />}
       </main>
       <TrustStrip />
+      <WhatsAppButton />
     </div>
   );
 }
