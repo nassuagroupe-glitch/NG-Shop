@@ -54,8 +54,18 @@ export default function Compte() {
               NG-Shop s'installe sur Windows (poste caisse et atelier) et sur Android (tablette vendeur).
             </p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <button className="btn btn-secondary">Windows (.exe)</button>
-              <button className="btn btn-secondary">Android (.apk)</button>
+              <a
+                className="btn btn-secondary"
+                href="https://github.com/nassuagroupe-glitch/NG-Shop/releases/download/v1.0.0/NG-Shop.Setup.1.0.0.exe"
+              >
+                Windows (.exe)
+              </a>
+              <a
+                className="btn btn-secondary"
+                href="https://github.com/nassuagroupe-glitch/NG-Shop/releases/download/v1.0.0/NG-Shop.apk"
+              >
+                Android (.apk)
+              </a>
             </div>
           </div>
         </aside>
