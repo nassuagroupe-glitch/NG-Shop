@@ -6,7 +6,7 @@ const STORAGE_KEY = 'ng-shop-state-v1';
 const DEFAULT_STATE = {
   screen: 'boutique', role: 'Client', cat: 'Tous', q: '', pid: 'p1',
   cart: { p1: 1, p4: 2 }, pay: 'Orange Money', step: 2,
-  inter: 'Sur site', slot: 'Jeudi matin', requestSent: false, orderDone: false,
+  inter: 'Sur site', slot: 'Jeudi matin', requestSent: false,
   posLines: [{ code: 'NGS-3301', qty: 1 }, { code: 'NGS-3318', qty: 2 }], scan: '', cashDone: false
 };
 
@@ -46,8 +46,7 @@ export function useShop() {
     setQ: (q) => patch({ q }),
     openProduct: (pid) => patch({ screen: 'produit', pid }),
     addToCart: (id) => patch((s) => ({
-      cart: { ...s.cart, [id]: (s.cart[id] || 0) + 1 },
-      orderDone: false
+      cart: { ...s.cart, [id]: (s.cart[id] || 0) + 1 }
     })),
     incCart: (id) => patch((s) => ({ cart: { ...s.cart, [id]: s.cart[id] + 1 } })),
     decCart: (id) => patch((s) => {
@@ -61,7 +60,7 @@ export function useShop() {
       return { cart: c };
     }),
     setPay: (pay) => patch({ pay }),
-    checkout: () => patch({ orderDone: true }),
+    clearCart: () => patch({ cart: {} }),
 
     setInter: (inter) => patch({ inter, requestSent: false }),
     setSlot: (slot) => patch({ slot, requestSent: false }),

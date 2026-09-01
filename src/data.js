@@ -453,6 +453,11 @@ export const PAYMENTS = [
   { id: 'Virement bancaire', note: 'Compte entreprise' }
 ];
 
+export const COMMUNES = [
+  'Abobo', 'Adjamé', 'Anyama', 'Attécoubé', 'Bingerville', 'Cocody',
+  'Koumassi', 'Marcory', 'Plateau', 'Port-Bouët', 'Songon', 'Treichville', 'Yopougon'
+];
+
 export const INTER_TYPES = ['À distance', 'Sur site', 'Dépôt en boutique'];
 export const SLOTS = ["Aujourd’hui 16 h", 'Jeudi matin', 'Jeudi après-midi', 'Samedi matin'];
 

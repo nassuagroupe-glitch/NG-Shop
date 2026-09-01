@@ -30,7 +30,7 @@ export default function App() {
         )}
         {st.screen === 'produit' && <Produit st={st} go={shop.go} addToCart={shop.addToCart} />}
         {st.screen === 'panier' && (
-          <Panier st={st} go={shop.go} incCart={shop.incCart} decCart={shop.decCart} removeCart={shop.removeCart} setPay={shop.setPay} checkout={shop.checkout} />
+          <Panier st={st} go={shop.go} incCart={shop.incCart} decCart={shop.decCart} removeCart={shop.removeCart} setPay={shop.setPay} clearCart={shop.clearCart} />
         )}
         {st.screen === 'maintenance' && (
           <Maintenance st={st} setInter={shop.setInter} setSlot={shop.setSlot} sendRequest={shop.sendRequest} go={shop.go} />

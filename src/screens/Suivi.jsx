@@ -1,6 +1,92 @@
-import { STEPS, LOG, REPAIR_QUOTE } from '../data.js';
+import { useState } from 'react';
+import { STEPS, LOG, REPAIR_QUOTE, fmt } from '../data.js';
+import { useOrderLookup } from '../useOrders.js';
 
-export default function Suivi({ st, advanceStep }) {
+const ORDER_STEPS = ['Nouvelle', 'En préparation', 'En livraison', 'Livrée'];
+
+function OrderTracking() {
+  const [ref, setRef] = useState('');
+  const { order, status, lookup } = useOrderLookup();
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (ref.trim()) lookup(ref);
+  };
+
+  const stepIndex = order ? ORDER_STEPS.indexOf(order.status) : -1;
+
+  return (
+    <section>
+      <h1 style={{ marginBottom: 6 }}>Suivi de commande</h1>
+      <div style={{ opacity: 0.65, fontSize: 14, marginBottom: 30 }}>
+        Entrez la référence reçue à la validation de votre commande pour suivre sa livraison.
+      </div>
+
+      <form onSubmit={submit} style={{ display: 'flex', gap: 10, maxWidth: 460, marginBottom: 30 }}>
+        <input
+          className="input"
+          value={ref}
+          onChange={(e) => setRef(e.target.value)}
+          placeholder="Référence de commande"
+          style={{ flex: 1 }}
+        />
+        <button className="btn btn-primary" type="submit" disabled={status === 'loading'}>
+          {status === 'loading' ? 'Recherche…' : 'Rechercher'}
+        </button>
+      </form>
+
+      {status === 'not-found' && (
+        <div className="notice" style={{ maxWidth: 460, color: 'var(--color-accent-2-700)' }}>
+          Aucune commande ne correspond à cette référence. Vérifiez qu'elle est copiée sans espace ni erreur.
+        </div>
+      )}
+      {status === 'error' && (
+        <div className="notice" style={{ maxWidth: 460, color: 'var(--color-accent-2-700)' }}>
+          Impossible de vérifier la commande pour le moment. Réessayez dans un instant.
+        </div>
+      )}
+
+      {order && status === 'found' && (
+        <div className="split-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.4fr) minmax(0,1fr)', gap: 44, alignItems: 'start' }}>
+          <div>
+            <div style={{ display: 'flex', gap: 0, flexWrap: 'wrap', marginBottom: 30 }}>
+              {ORDER_STEPS.map((s, i) => (
+                <div key={s} style={{ flex: 1, minWidth: 130, paddingRight: 18 }}>
+                  <div style={{ height: 3, marginBottom: 10, background: i <= stepIndex ? 'var(--color-accent)' : 'color-mix(in srgb, var(--color-text) 14%, transparent)' }} />
+                  <div className="mini-heading" style={{ opacity: i <= stepIndex ? 1 : 0.5 }}>{s}</div>
+                </div>
+              ))}
+            </div>
+            <h5 style={{ marginBottom: 12 }}>Articles commandés</h5>
+            <table className="table">
+              <thead><tr><th>Article</th><th style={{ width: 80 }}>Qté</th><th style={{ textAlign: 'right' }}>Total</th></tr></thead>
+              <tbody>
+                {order.items.map((it) => (
+                  <tr key={it.id}>
+                    <td>{it.name}</td>
+                    <td>{it.qty}</td>
+                    <td style={{ textAlign: 'right' }}>{fmt(it.price * it.qty)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <aside style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <h5>Livraison</h5>
+            <div style={{ fontSize: 14 }}>{order.customer.name} · {order.customer.phone}</div>
+            <div style={{ fontSize: 14, opacity: 0.72 }}>{order.customer.commune} — {order.customer.address}</div>
+            <div className="total-due-row" style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 20, marginTop: 6 }}>
+              <span>Total</span><span>{fmt(order.total)}</span>
+            </div>
+            <div style={{ fontSize: 12, opacity: 0.6 }}>Paiement par {order.payment_method}, réglé à la livraison.</div>
+          </aside>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function RepairTicket({ st, advanceStep }) {
   return (
     <section>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, flexWrap: 'wrap', marginBottom: 6 }}>
@@ -55,4 +141,9 @@ export default function Suivi({ st, advanceStep }) {
       </div>
     </section>
   );
+}
+
+export default function Suivi({ st, advanceStep }) {
+  if (st.role === 'Client') return <OrderTracking />;
+  return <RepairTicket st={st} advanceStep={advanceStep} />;
 }
