@@ -513,6 +513,16 @@ export function cartTotal(cart) {
   }, 0);
 }
 
+// Réduction d'affichage (façon "prix barré" marketplace) : générée de façon
+// déterministe à partir de l'id produit, pas de vraie promotion en base.
+export function discountOf(p) {
+  let hash = 0;
+  for (let i = 0; i < p.id.length; i++) hash = (hash * 31 + p.id.charCodeAt(i)) >>> 0;
+  const percent = 15 + (hash % 16); // 15 à 30 %
+  const oldPrice = Math.round(p.price / (1 - percent / 100) / 100) * 100;
+  return { percent, oldPrice };
+}
+
 export const CATEGORY_ICONS = {
   'PC Portables': '💻',
   'PC Bureaux': '🖥️',

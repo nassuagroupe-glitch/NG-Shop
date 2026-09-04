@@ -1,4 +1,4 @@
-import { PRODUCTS, SERVICES, CATEGORY_ICONS, fmt } from '../data.js';
+import { PRODUCTS, SERVICES, CATEGORY_ICONS, fmt, discountOf } from '../data.js';
 import HeroCarousel from '../components/HeroCarousel.jsx';
 import TileLogoSlides from '../components/TileLogoSlides.jsx';
 
@@ -8,6 +8,7 @@ const REPAIR_IMAGES = ['/repair/repair1.png', '/repair/repair2.svg', '/repair/re
 export default function Boutique({ st, setCat, setQ, openProduct, addToCart, go }) {
   const catNames = [...new Set(PRODUCTS.map((p) => p.cat))];
   const q = st.q.trim().toLowerCase();
+  const isBrowsing = st.cat === 'Tous' && !q;
   const filtered = PRODUCTS.filter(
     (p) =>
       (st.cat === 'Tous' || p.cat === st.cat) &&
@@ -84,31 +85,77 @@ export default function Boutique({ st, setCat, setQ, openProduct, addToCart, go 
         />
       </div>
 
+      {isBrowsing ? (
+        catNames.map((c) => (
+          <CategoryRail
+            key={c}
+            title={c}
+            products={PRODUCTS.filter((p) => p.cat === c)}
+            onSeeMore={() => setCat(c)}
+            openProduct={openProduct}
+            addToCart={addToCart}
+          />
+        ))
+      ) : (
+        <>
+          <div className="section-title">
+            <h2>Au catalogue</h2>
+            <span className="text-muted" style={{ fontSize: 13 }}>{filtered.length} références disponibles</span>
+          </div>
+          <div className="product-grid" style={{ marginBottom: 20 }}>
+            {filtered.map((p) => (
+              <ProductCard key={p.id} p={p} openProduct={openProduct} addToCart={addToCart} />
+            ))}
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+function CategoryRail({ title, products, onSeeMore, openProduct, addToCart }) {
+  return (
+    <div style={{ marginBottom: 22 }}>
       <div className="section-title">
-        <h2>Au catalogue</h2>
-        <span className="text-muted" style={{ fontSize: 13 }}>{filtered.length} références disponibles</span>
+        <h2>{title}</h2>
+        <button className="see-more-link" onClick={onSeeMore}>Voir plus →</button>
       </div>
-      <div className="product-grid" style={{ marginBottom: 20 }}>
-        {filtered.map((p) => (
-          <article key={p.id} className="card product-card">
-            {p.stock <= 4 && (
-              <span className="tag tag-badge product-badge">{p.stock === 0 ? 'Rupture' : 'Stock faible'}</span>
-            )}
-            <div className="photo">{p.image ? <img src={p.image} alt={p.name} /> : p.name}</div>
-            <div className="card-kicker">{p.cat}</div>
-            <button className="product-name-btn" onClick={() => openProduct(p.id)}>
-              {p.name}
-            </button>
-            <div className="card-meta">réf. {p.code}</div>
-            <div className="product-price-row">
-              <span className="product-price">{fmt(p.price)}</span>
-              <StockInline p={p} />
-            </div>
-            <button className="btn btn-primary btn-block" onClick={() => addToCart(p.id)}>Ajouter</button>
-          </article>
+      <div className="product-rail">
+        {products.map((p) => (
+          <div className="product-rail-item" key={p.id}>
+            <ProductCard p={p} openProduct={openProduct} addToCart={addToCart} />
+          </div>
         ))}
       </div>
-    </section>
+    </div>
+  );
+}
+
+function ProductCard({ p, openProduct, addToCart }) {
+  const lowStock = p.stock <= 4;
+  const { percent, oldPrice } = discountOf(p);
+  return (
+    <article className="card product-card">
+      {lowStock ? (
+        <span className="tag tag-badge product-badge">{p.stock === 0 ? 'Rupture' : 'Stock faible'}</span>
+      ) : (
+        <span className="discount-badge">-{percent}%</span>
+      )}
+      <div className="photo">{p.image ? <img src={p.image} alt={p.name} /> : p.name}</div>
+      <div className="card-kicker">{p.cat}</div>
+      <button className="product-name-btn" onClick={() => openProduct(p.id)}>
+        {p.name}
+      </button>
+      <div className="card-meta">réf. {p.code}</div>
+      <div className="product-price-row">
+        <span className="price-group">
+          <span className="product-price">{fmt(p.price)}</span>
+          <span className="product-oldprice">{fmt(oldPrice)}</span>
+        </span>
+        <StockInline p={p} />
+      </div>
+      <button className="btn btn-primary btn-block" onClick={() => addToCart(p.id)}>Ajouter</button>
+    </article>
   );
 }
 

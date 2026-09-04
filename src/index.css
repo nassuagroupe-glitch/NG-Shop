@@ -314,10 +314,34 @@ main.screen { flex: 1; width: 100%; max-width: 1300px; margin: 0 auto; padding: 
   text-align: left; background: transparent; border: 0; padding: 0; cursor: pointer;
   font-family: var(--font-heading); font-weight: 700; font-size: 16px; line-height: 1.25; color: var(--color-text);
 }
-.product-price-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 6px; }
+.product-price-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 6px; flex-wrap: wrap; }
 .product-price { font-family: var(--font-heading); font-weight: 700; font-size: 17px; }
 .stock-tag { font-size: 13px; }
 .stock-inline { font-size: 12px; white-space: nowrap; }
+.price-group { display: inline-flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.product-oldprice { font-size: 12px; text-decoration: line-through; color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.discount-badge {
+  position: absolute; top: 22px; left: 22px; z-index: 1;
+  background: var(--color-accent-2); color: #fff; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.02em; padding: 3px 8px; border-radius: var(--radius-sm);
+}
+
+/* — product rails (rangées par catégorie, style marketplace) — */
+.product-rail { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+.product-rail-item { flex: 0 0 200px; }
+.product-rail-item .product-card { height: 100%; }
+.see-more-link {
+  background: transparent; border: 0; cursor: pointer; white-space: nowrap;
+  font-family: var(--font-heading); font-weight: 600; font-size: 13px; color: var(--color-accent-700);
+}
+.see-more-link:hover { text-decoration: underline; }
+
+/* — seller / fulfilment block on product page — */
+.seller-block {
+  background: var(--color-surface); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 24px;
+}
+.seller-block-name { font-family: var(--font-heading); font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+.seller-block-list { margin: 0; padding-left: 18px; font-size: 13px; opacity: 0.85; display: flex; flex-direction: column; gap: 4px; }
 
 /* — shared two-column screen layout (Panier, Maintenance, Suivi, Compte, Produit) — */
 .split-layout {}
@@ -425,8 +449,22 @@ main.screen { flex: 1; width: 100%; max-width: 1300px; margin: 0 auto; padding: 
   .product-price-row { padding-top: 2px; }
   .product-price { font-size: 8px; }
   .stock-inline { font-size: 6px; }
-  .product-badge { top: 10px; left: 10px; font-size: 8px; padding: 2px 5px; }
+  .product-badge, .discount-badge { top: 10px; left: 10px; font-size: 8px; padding: 2px 5px; }
   .product-card .btn-block { font-size: 8px; padding: 4px 6px; margin-top: 4px; }
+  .product-oldprice { font-size: 6px; }
+  .price-group { gap: 4px; }
+
+  .product-rail { gap: 6px; }
+  .product-rail-item { flex-basis: 84px; }
+  .product-rail-item .product-card { padding: 6px; gap: 4px; }
+  .product-rail-item .card-kicker { font-size: 6px; }
+  .product-rail-item .product-name-btn { font-size: 8px; line-height: 1.15; }
+  .product-rail-item .card-meta { font-size: 6px; }
+  .see-more-link { font-size: 9px; }
+
+  .seller-block { padding: 8px 10px; margin-bottom: 12px; }
+  .seller-block-name { font-size: 10px; margin-bottom: 3px; }
+  .seller-block-list { font-size: 9px; padding-left: 12px; gap: 2px; }
 
   .trust-strip-inner { padding: 12px; gap: 10px; }
   .trust-title { font-size: 11px; }
@@ -453,6 +491,7 @@ main.screen { flex: 1; width: 100%; max-width: 1300px; margin: 0 auto; padding: 
   .total-due-row { font-size: 14px !important; }
   .product-title { font-size: 20px !important; margin-bottom: 6px !important; }
   .product-title-price { font-size: 18px !important; }
+  .product-title-price + .product-oldprice { font-size: 12px !important; }
   .pos-total { font-size: 26px; }
   .kpi-value { font-size: 22px; }
 }
