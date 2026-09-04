@@ -45,3 +45,28 @@ grant execute on function get_order_by_id(uuid) to anon, authenticated;
 
 -- Active les mises à jour en temps réel du tableau de bord
 alter publication supabase_realtime add table orders;
+
+-- Création de commande : la policy d'insert seule ne suffit pas car le
+-- client a besoin de relire l'id généré juste après (createOrder fait un
+-- .select('id') après l'insert), et il n'y a pas de policy select pour les
+-- clients anonymes. On passe donc par une fonction security definer.
+create or replace function create_order(
+  customer jsonb,
+  items jsonb,
+  payment_method text,
+  subtotal_ht numeric,
+  tva numeric,
+  delivery_fee numeric,
+  total numeric
+)
+returns uuid
+language sql
+security definer
+set search_path = public
+as $$
+  insert into orders (customer, items, payment_method, subtotal_ht, tva, delivery_fee, total)
+  values (customer, items, payment_method, subtotal_ht, tva, delivery_fee, total)
+  returning id;
+$$;
+
+grant execute on function create_order(jsonb, jsonb, text, numeric, numeric, numeric, numeric) to anon, authenticated;

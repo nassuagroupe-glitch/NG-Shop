@@ -2,21 +2,17 @@ import { useEffect, useState } from 'react';
 import { supabase } from './supabase.js';
 
 export async function createOrder({ customer, items, paymentMethod, subtotalHT, tva, deliveryFee, total }) {
-  const { data, error } = await supabase
-    .from('orders')
-    .insert({
-      customer,
-      items,
-      payment_method: paymentMethod,
-      subtotal_ht: subtotalHT,
-      tva,
-      delivery_fee: deliveryFee,
-      total
-    })
-    .select('id')
-    .single();
+  const { data, error } = await supabase.rpc('create_order', {
+    customer,
+    items,
+    payment_method: paymentMethod,
+    subtotal_ht: subtotalHT,
+    tva,
+    delivery_fee: deliveryFee,
+    total
+  });
   if (error) throw error;
-  return data.id;
+  return data;
 }
 
 export function useOrdersList() {
