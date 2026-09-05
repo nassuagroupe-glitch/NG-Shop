@@ -3,6 +3,8 @@ import { KPIS, LOW_STOCK_IDS, PRODUCTS, fmt } from '../data.js';
 import { StockInline } from './Boutique.jsx';
 import { useAuth } from '../useAuth.js';
 import { useOrdersList, updateOrderStatus } from '../useOrders.js';
+import { useReviewsModeration, approveReview, deleteReview } from '../useReviews.js';
+import Stars from '../components/Stars.jsx';
 
 const ORDER_STATUSES = ['Nouvelle', 'En préparation', 'En livraison', 'Livrée', 'Annulée'];
 
@@ -50,6 +52,8 @@ function LoginGate({ signIn }) {
 export default function Dashboard() {
   const { user, ready, signIn, signOutUser } = useAuth();
   const { orders, loading } = useOrdersList();
+  const { reviews, loading: reviewsLoading } = useReviewsModeration();
+  const pendingReviews = reviews.filter((r) => !r.approved);
   const lowStock = LOW_STOCK_IDS.map((id) => PRODUCTS.find((p) => p.id === id));
 
   if (!ready) return null;
@@ -118,6 +122,38 @@ export default function Dashboard() {
           ))}
           <button className="btn btn-secondary" style={{ marginTop: 10 }}>Générer le bon de commande</button>
         </aside>
+      </div>
+
+      <div style={{ marginTop: 48 }}>
+        <h5 style={{ marginBottom: 12 }}>Avis clients à modérer {pendingReviews.length > 0 && `(${pendingReviews.length})`}</h5>
+        {reviewsLoading ? (
+          <div style={{ opacity: 0.6, fontSize: 14 }}>Chargement…</div>
+        ) : pendingReviews.length === 0 ? (
+          <div style={{ opacity: 0.6, fontSize: 14 }}>Aucun avis en attente de validation.</div>
+        ) : (
+          <table className="table">
+            <thead><tr><th>Produit</th><th>Client</th><th>Note</th><th>Commentaire</th><th style={{ width: 160 }} /></tr></thead>
+            <tbody>
+              {pendingReviews.map((r) => {
+                const product = PRODUCTS.find((p) => p.id === r.product_id);
+                return (
+                  <tr key={r.id}>
+                    <td style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}>{product ? product.name : r.product_id}</td>
+                    <td>{r.customer_name}</td>
+                    <td><Stars value={r.rating} size={13} /></td>
+                    <td style={{ maxWidth: 260 }}>{r.comment}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button className="btn btn-primary" style={{ padding: '4px 10px', fontSize: 13 }} onClick={() => approveReview(r.id)}>Approuver</button>
+                        <button className="btn btn-ghost" style={{ padding: '4px 10px', fontSize: 13, color: 'var(--color-accent-2-700)' }} onClick={() => deleteReview(r.id)}>Rejeter</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </section>
   );

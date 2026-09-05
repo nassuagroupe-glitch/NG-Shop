@@ -1,11 +1,14 @@
 import { PRODUCTS, SERVICES, CATEGORY_ICONS, fmt, discountOf } from '../data.js';
 import HeroCarousel from '../components/HeroCarousel.jsx';
 import TileLogoSlides from '../components/TileLogoSlides.jsx';
+import Stars from '../components/Stars.jsx';
+import { useAllRatings } from '../useReviews.js';
 
 const PME_LOGOS = ['/pme/office365.png', '/pme/windows.png', '/pme/windev.png'];
 const REPAIR_IMAGES = ['/repair/repair1.png', '/repair/repair2.svg', '/repair/repair3.jpg'];
 
 export default function Boutique({ st, setCat, setQ, openProduct, addToCart, go }) {
+  const ratings = useAllRatings();
   const catNames = [...new Set(PRODUCTS.map((p) => p.cat))];
   const q = st.q.trim().toLowerCase();
   const isBrowsing = st.cat === 'Tous' && !q;
@@ -94,6 +97,7 @@ export default function Boutique({ st, setCat, setQ, openProduct, addToCart, go 
             onSeeMore={() => setCat(c)}
             openProduct={openProduct}
             addToCart={addToCart}
+            ratings={ratings}
           />
         ))
       ) : (
@@ -104,7 +108,7 @@ export default function Boutique({ st, setCat, setQ, openProduct, addToCart, go 
           </div>
           <div className="product-grid" style={{ marginBottom: 20 }}>
             {filtered.map((p) => (
-              <ProductCard key={p.id} p={p} openProduct={openProduct} addToCart={addToCart} />
+              <ProductCard key={p.id} p={p} openProduct={openProduct} addToCart={addToCart} rating={ratings[p.id]} />
             ))}
           </div>
         </>
@@ -113,7 +117,7 @@ export default function Boutique({ st, setCat, setQ, openProduct, addToCart, go 
   );
 }
 
-function CategoryRail({ title, products, onSeeMore, openProduct, addToCart }) {
+function CategoryRail({ title, products, onSeeMore, openProduct, addToCart, ratings }) {
   return (
     <div style={{ marginBottom: 22 }}>
       <div className="section-title">
@@ -123,7 +127,7 @@ function CategoryRail({ title, products, onSeeMore, openProduct, addToCart }) {
       <div className="product-rail">
         {products.map((p) => (
           <div className="product-rail-item" key={p.id}>
-            <ProductCard p={p} openProduct={openProduct} addToCart={addToCart} />
+            <ProductCard p={p} openProduct={openProduct} addToCart={addToCart} rating={ratings[p.id]} />
           </div>
         ))}
       </div>
@@ -131,7 +135,7 @@ function CategoryRail({ title, products, onSeeMore, openProduct, addToCart }) {
   );
 }
 
-function ProductCard({ p, openProduct, addToCart }) {
+function ProductCard({ p, openProduct, addToCart, rating }) {
   const lowStock = p.stock <= 4;
   const { percent, oldPrice } = discountOf(p);
   return (
@@ -147,6 +151,12 @@ function ProductCard({ p, openProduct, addToCart }) {
         {p.name}
       </button>
       <div className="card-meta">réf. {p.code}</div>
+      {rating && (
+        <div className="rating-summary">
+          <Stars value={rating.average} size={12} />
+          <span className="rating-count">({rating.count})</span>
+        </div>
+      )}
       <div className="product-price-row">
         <span className="price-group">
           <span className="product-price">{fmt(p.price)}</span>

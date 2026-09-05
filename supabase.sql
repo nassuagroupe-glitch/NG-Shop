@@ -70,3 +70,53 @@ as $$
 $$;
 
 grant execute on function create_order(jsonb, jsonb, text, numeric, numeric, numeric, numeric) to anon, authenticated;
+
+-- Avis clients (notes produits)
+
+create table if not exists reviews (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  product_id text not null,
+  customer_name text not null,
+  rating smallint not null check (rating between 1 and 5),
+  comment text,
+  approved boolean not null default false
+);
+
+alter table reviews enable row level security;
+
+-- Le public ne voit que les avis validés par le gérant
+create policy "anyone can select approved reviews" on reviews
+  for select to anon, authenticated using (approved = true);
+
+-- Le gérant connecté voit aussi les avis en attente (modération)
+create policy "authenticated can select all reviews" on reviews
+  for select to authenticated using (true);
+
+create policy "authenticated can update reviews" on reviews
+  for update to authenticated using (true);
+
+create policy "authenticated can delete reviews" on reviews
+  for delete to authenticated using (true);
+
+-- Dépôt d'avis : passe par une fonction security definer (même raison que
+-- create_order) pour forcer approved = false quel que soit l'appelant anonyme.
+create or replace function submit_review(
+  product_id text,
+  customer_name text,
+  rating smallint,
+  comment text
+)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  insert into reviews (product_id, customer_name, rating, comment, approved)
+  values (product_id, customer_name, rating, nullif(trim(comment), ''), false);
+$$;
+
+grant execute on function submit_review(text, text, smallint, text) to anon, authenticated;
+
+-- Mises à jour en temps réel pour la file de modération du tableau de bord
+alter publication supabase_realtime add table reviews;
